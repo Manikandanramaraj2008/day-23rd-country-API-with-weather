@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+         //Title Block
+         var title = document.createElement("h2");
+        title.setAttribute("id", "titleBlock");
+        title.style.textAlign = 'center'
+        title.style.color = 'white'
+        title.style.backgroundColor = "rgb(164, 63, 146)";
+        title.style.margin = '10px 40px 10px 10px'
+        title.innerText = 'COUNTRIES FLAG AND WEATHER APP';
+        document.body.appendChild(title)
+
+        // page design
+        var myPage = document.createElement("div");
+        myPage.style.display = 'flex';
+        myPage.style.flexDirection = 'row';
+        myPage.style.flexWrap = 'wrap';
+        myPage.style.width = "1540px";
+        myPage.style.border = "10px 0px 10px 5px";
+        myPage.style.backgroundColor = "rgb(0,170,170)";
+        getAllData();
+        // JSON fetching ..
+        async function getAllData(userName) {
+            try {
+                var dat = await fetch("https://restcountries.com/v3.1/all")
+                var dataObj = await dat.json();
+
+                // console.log(dataObj.length);
+                for (var item = 0; item < dataObj.length - 1; item++) {
+                    //block of Containers
+                    var indCard = document.createElement("div");
+                    indCard.style.height = '300px';
+                    indCard.style.width = "31%";
+                    indCard.style.margin = '30px 3px 3px 30px'
+                    indCard.style.backgroundColor = "rgb(0,129,170)";;
+                    indCard.style.display = "grid";
+                    indCard.style.gridAutoRows = 'auto';
+
+                    //image placement
+                    var img = document.createElement('img');
+                    img.src = dataObj[item].flags.png;
+                    img.height = "150";
+                    img.width = "250";
+                    img.style.margin = '40px 5px 10px 120px';
+                    indCard.appendChild(img);
+
+                    var country = document.createElement('h3');
+                    country.innerHTML = dataObj[item].name.common;
+                    var countryName = dataObj[item].name.common;
+                    country.style.color = 'white'
+                    country.style.textAlign = "center";
+
+                    var weatherDiv = document.createElement("div");
+                    weatherDiv.style.width = '400px';
+                    weatherDiv.style.height = '30px';
+                    weatherDiv.style.background = "lightblue";
+                    weatherDiv.style.margin = '0px 50px 0px 40px';
+                    weatherDiv.style.innerHTML = "Click to know weather"
+
+                    var weather = document.createElement('h4');
+                    weather.style.color = "#ad1c4c";
+                    weather.style.marginTop = "5px";
+                    weather.style.textAlign = "Center"
+                    weather.innerText = "Click for weather";
+
+                    weatherDiv.addEventListener("mouseover", myusecase1);
+                    weatherDiv.addEventListener("mouseout", myusecase2);
+
+                    weatherDiv.setAttribute("id", item);
+                    weatherDiv.addEventListener('click', function () {
+                        //console.log(this.id);
+                        getWeatherData(dataObj[this.id].name.common);
+                        async function getWeatherData(countryName) {
+
+                            try {
+                                console.log(countryName);
+                                const apiKey = "b2ea768f0720c9ace55b3fbda0b70145";
+                                const url = 'https://api.openweathermap.org/data/2.5/weather?q=' + countryName + '&appid=b2ea768f0720c9ace55b3fbda0b70145';
+                                console.log(url);
+                                var dat1 = await fetch(url)
+                                var obj1 = await dat1.json();
+
+                                //      alert(JSON.stringify(obj1.main));
+                                console.log("Temperature = " + obj1.main.temp);
+                                console.log("Feels Like = " + obj1.main.feels_like);
+                                console.log("Temperature Minimum = " + obj1.main.temp_min);
+                                console.log("Temperature Maximum = " + obj1.main.temp_max);
+                                console.log("Pressure = " + obj1.main.pressure);
+                                console.log("humidity = " + obj1.main.humidity);
+                                console.log(" Sea Level = " + obj1.main.sea_level)
+                                console.log("Ground Level =" + obj1.main.grnd_level);
+                                output(obj1.main, countryName);
+                            }
+                            catch (error) {
+                                console.log("Error in data fetching")
+                            }
+                        }
+                    });
+                    indCard.appendChild(country);
+                    weatherDiv.appendChild(weather)
+                    indCard.appendChild(weatherDiv);
+                    myPage.appendChild(indCard);
+                }
+                document.body.appendChild(myPage);
+            }
+            catch (err) { console.log(err) }
+        }
+        function output(object, countryName) {
+            var myWindow = window.open("", "Weather Details", "width=350, height=400");
+            myWindow.moveTo(500, 100);
+            console.log("output Temperature = " + object.temp);
+            myWindow.focus();
+            myWindow.document.write(countryName + "  Weather Report " + "<br>");
+            myWindow.document.write("xxxxxxxxxxxxxxxxxxxxxxxxxx" + "<br>" + "<br>");
+            myWindow.document.write("Temperature = " + object.temp + "  Deg F" + "<br>");
+            myWindow.document.write("Feels Like = " + object.feels_like + "  Deg F" + "<br>");
+            myWindow.document.write("Temperature Minimum = " + object.temp_min + "  Deg F" + "<br>");
+            myWindow.document.write("Temperature Maximum = " + object.temp_max + "  Deg F" + "<br>");
+            myWindow.document.write("Pressure = " + object.pressure + "  millibar" + "<br>");
+            myWindow.document.write("humidity = " + object.humidity + "<br>");
+            myWindow.document.write(" Sea Level = " + object.sea_level + "<br>");
+            myWindow.document.write("Ground Level =" + object.grnd_level + "<br>");
+            myWindow.document.write("<br>" + "<br>" + "This window will autoclose in 3 sec")
+            setTimeout(function () { myWindow.close() }, 3000);
+
+            //   alert("Temperature = " +object.temp+'\n'+"Feels Like = " + object.feels_like+'\n'+"Temperature Minimum = "+ object.temp_min+'\n'+"Temperature Maximum = "+ object.temp_max+'\n'+"Pressure = " + object.pressure+'\n'+"humidity = "+object.humidity+'\n'+" Sea Level = " + object.sea_level+'\n'+"Ground Level =" + object.grnd_level);
+        }
+
+        function myusecase1() {
+            this.style.backgroundColor = "#99a832";
+            this.style.cursor = "pointer";
+            //console.log(dataObj[this].name.common)
+        }
+        //  api.openweathermap.org/data/2.5/weather?q={city name}&appid={b2ea768f0720c9ace55b3fbda0b70145}
+        function myusecase2() {
+            this.style.backgroundColor = "lightblue";
+        }
+
+    </script>
+</body>
+</html>
